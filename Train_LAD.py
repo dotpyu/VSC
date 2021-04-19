@@ -228,9 +228,6 @@ def main_proc(typ, split, lad_bin, save_loc='./'):
     torch.cuda.manual_seed_all(1)
     device=torch.device("cuda:0")
 
-
-
-
     # TODO: Rewrite get_attributes
     # att = get_attributes(device, attributes_url, all_class_url, train_class_url, test_class_url)
     fid2clusters = np.load('/users/pyu12/data/pyu12/datasets/lad/fid2clusters.npy', allow_pickle=True).item()
@@ -252,7 +249,7 @@ def main_proc(typ, split, lad_bin, save_loc='./'):
     att = att[:, index[typ]]
     input_dim = len(index[typ])  # num_attributes
 
-    word_vectors = torch.FloatTensor(att)
+    word_vectors = torch.FloatTensor(att).to(device)
     word_vectors = F.normalize(word_vectors)  ## Normalize
 
     train_center = 'LAD_ResNet50_VC_{:s}_{:d}.json'.format(typ, split)
