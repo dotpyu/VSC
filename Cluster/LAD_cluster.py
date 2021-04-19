@@ -68,10 +68,11 @@ def SC(features,opts):
     print("Finish writing ...")
 
 def cluster(typ, split, lad_bin):
-    meta_split_info = np.load(lad_bin + 'split_meta_info.npy', allow_pickle=True).item()
 
-    unseen_classes = meta_split_info['unseen'][typ]
-    with open(lad_bin + 'split_{:d}/{:s}/r50_features/unseen_all.pkl'.format(split, typ),
+    meta_split_info = np.load(lad_bin + 'meta_split_info_v2.npy', allow_pickle=True).item()
+    unseen_classes = meta_split_info['splits'][split][typ]['unseen']
+
+    with open(lad_bin + 'splits/split_{:d}/{:s}/r50_features/unseen_all.pkl'.format(split, typ),
               'rb') as infile:
         unseen_all = pickle.load(infile)
     all_features = []
@@ -82,7 +83,7 @@ def cluster(typ, split, lad_bin):
 if __name__ == '__main__':
 
     lad_bin = '/home/peilin/Dataset/LAD/annotations/npys/'
-    lad_bin = 'users/pyu12/data/bats/projects/attributes/LAD/splits/'
+    lad_bin = 'users/pyu12/data/bats/projects/attributes/LAD/'
     valid_range = ['E', 'V', 'F', 'A', 'H']
     split_range = range(5)
 

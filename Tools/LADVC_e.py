@@ -6,20 +6,20 @@ import pickle
 
 # lad_bin = '/home/peilin/Dataset/LAD/annotations/npys/'
 
-lad_bin = '/users/pyu12/data/bats/projects/attributes/LAD/splits/'
+lad_bin = '/users/pyu12/data/bats/projects/attributes/LAD/'
 def extract(typ='E', split=0):
-    meta_split_info = np.load(lad_bin + 'split_meta_info.npy', allow_pickle=True).item()
-    seen_classes = meta_split_info['seen'][typ]
-    unseen_classes = meta_split_info['unseen'][typ]
+    meta_split_info = np.load(lad_bin + 'meta_split_info_v2.npy', allow_pickle=True).item()
+    unseen_classes = meta_split_info['splits'][split][typ]['unseen']
+    seen_classes = meta_split_info['splits'][split][typ]['seen']
 
     # with open(lad_bin + 'seen_all_labels.pkl', 'rb') as infile:
     #     seen_all_labels = pickle.load(infile)
 
-    with open(lad_bin + 'split_{:d}/{:s}/r50_features/seen_all.pkl'.format(split, typ),
+    with open(lad_bin + 'splits/split_{:d}/{:s}/r50_features/seen_all.pkl'.format(split, typ),
               'rb') as infile:
         seen_all = pickle.load(infile)
 
-    with open(lad_bin + 'split_{:d}/{:s}/r50_features/unseen_all.pkl'.format(split, typ),
+    with open(lad_bin + 'splits/split_{:d}/{:s}/r50_features/unseen_all.pkl'.format(split, typ),
               'rb') as infile:
         unseen_all = pickle.load(infile)
 
