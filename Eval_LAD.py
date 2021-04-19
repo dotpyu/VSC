@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 from PIL import Image
-
+import pickle
 
 def L2_dis(x,y):
 
@@ -39,94 +39,45 @@ def NN_search(x,center):
     return ret
 
 
-def get_center(checkpoint_fn):
+def get_center(typ, split):
     center={}
-    file="Pred_Center.txt"
-    center_fn = os.path.join(checkpoint_fn, file)
-    with open(center_fn,"r") as f:
+    file="Pred_Center_{:s}_{:d}.txt".format(typ, split)
+    with open(file,"r") as f:
         for i,lines in enumerate(f):
             line=lines.strip().split()
             pp=[float(x) for x in line]
-            center[target_class[i]]=np.array(pp)
-
-
+            center[i]=np.array(pp)
     return center
 
 
 
+def eval(typ, split, lad_bin):
+    meta_split_info = np.load(lad_bin + 'meta_split_info_v2.npy', allow_pickle=True).item()
+    unseen_classes = meta_split_info['splits'][split][typ]['unseen']
+    seen_classes = meta_split_info['splits'][split][typ]['seen']
+
+    with open(lad_bin + 'splits/split_{:d}/{:s}/r50_features/unseen_all.pkl'.format(split, typ),
+              'rb') as infile:
+        unseen_all = pickle.load(infile)
+
+    translator = {old_label:new_label for new_label, old_label in enumerate(unseen_classes)}
+    center = get_center(typ, split)
+    correct = 0
+    for fea_vec_pair in unseen_all:  #### Test the image features of each class
+        fea_vec=np.array(fea_vec_pair[0])
+        label = translator[int(fea_vec_pair[1])]
+        ans=NN_search(fea_vec,center)  # Find the nearest neighbour in the feature space
+        if ans==label:
+            correct+=1
+    #assert test_class_num==len(target_class), "Maybe there is someting wrong?"
+    print("For {:s} and Split {:d}, The final MCA result is {:%.5f}",format(typ, split, correct/len(unseen_all)))
+
 
 if __name__=="__main__":
+    valid_range = ['E', 'V', 'F', 'A', 'H']
+    split_range = range(5)
+    lad_bin = '/users/pyu12/data/bats/projects/attributes/LAD/'
+    for split in split_range:
+        for typ in valid_range:
+            eval(typ, split, lad_bin)
 
-
-
-
-    target_class = []
-    # test_class_fn = os.path.join(root, "zsl_data", "proposed_split", "CUB", "testclasses.txt")
-    # test_class_fn = os.path.join(root, "zsl_data", "proposed_split", "AWA2", "testclasses.txt")
-    # test_class_fn = os.path.join(root, "zsl_data", "standard_split", "AWA2", "testclasses.txt")
-    #test_class_fn = os.path.join(root, "zsl_data", "standard_split", "SUN", "testclasses.txt")
-    # test_class_fn = os.path.join(root, "zsl_data", "standard_split", "AWA1", "testclasses.txt")
-    # test_class_fn = "/home/ziyu/zsl_data/SUN/SUN10_test.txt"
-    # test_class_fn = os.path.join(root, "zsl_data", opts.split_mode, opts.dataset.upper(), "testclasses.txt")
-    if opts.dataset=="SUN10":
-        test_class_fn = os.path.join(opts.root,'zsl_data','SUN','SUN10_test.txt')
-    else:
-        test_class_fn = os.path.join(opts.root, "zsl_data", opts.split_mode, opts.dataset.upper(), "testclasses.txt")
-
-    with open(test_class_fn, "r") as f:
-        for lines in f:
-            line = lines.strip().split()
-            target_class.append(line[0])
-            ### Get the name of unseen classes
-
-    if opts.split_mode=='standard_split':
-        mode="SS"
-    else:
-        mode="PS"
-
-
-    all=0.0
-    if opts.dataset=="CUB":
-        img_fn=os.path.join(opts.root,"zsl_data","CUB_200_2011", "images")
-    if opts.dataset=="AwA2":
-        img_fn=os.path.join(opts.root,"zsl_data","Animals_with_Attributes2", "JPEGImages")
-    if opts.dataset=="AwA1":
-        img_fn=os.path.join(opts.root, "zsl_data", "AwA", "images")
-    if opts.dataset=="SUN" or opts.dataset=="SUN10":
-        img_fn="/home/ziyu/zsl_data/SUN/image"
-    #CUB_fn=os.path.join(root,"zsl_data","CUB_200_2011", "images")
-    #AWA2_fn=os.path.join(root,"zsl_data","Animals_with_Attributes2", "JPEGImages")
-    #AWA1_fn = os.path.join(root, "zsl_data", "AwA", "images")
-    #SUN_fn="/home/ziyu/zsl_data/SUN/image"
-    center=get_center(opts.checkpoint_fn)
-
-
-
-    #center=RC_2_SC(i)
-
-    for id,target in enumerate(target_class):
-        cur=os.path.join(img_fn,target)
-
-        fea_name=""
-
-        url=os.path.join(cur,"ResNet101_%s.json"%(mode))
-        js = json.load(open(url, "r"))
-        cur_features=js["features"]
-
-        correct=0
-        sum=0
-
-
-        for fea_vec in cur_features:  #### Test the image features of each class
-            fea_vec=np.array(fea_vec)
-            ans=NN_search(fea_vec,center)  # Find the nearest neighbour in the feature space
-
-
-            if ans==target:
-                correct+=1
-            sum+=1
-
-        all += correct * 1.0 / sum
-
-    #assert test_class_num==len(target_class), "Maybe there is someting wrong?"
-    print("The final MCA result is %.5f"%(all/len(target_class)))
