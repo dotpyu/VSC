@@ -84,3 +84,12 @@ if __name__=="__main__":
         for typ in valid_range:
             results[typ+str(split)] = eval(typ, split, lad_bin)
     np.save('results', results)
+
+    printout_order = ['A', 'F', 'V', 'E', 'H']
+
+    line = ''
+    for typ in printout_order:
+        for split in split_range:
+            line += '{:.5f},'.format(results[typ+str(split)])
+        line += ';'
+    print(line)
