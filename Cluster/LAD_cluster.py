@@ -77,13 +77,13 @@ def cluster(typ, split, lad_bin):
         unseen_all = pickle.load(infile)
     all_features = []
     for item in unseen_all:
-        all_features.append(item[0])
+        all_features.append(np.array(item[0]))
     KM(all_features, len(unseen_classes), typ, split)
 
 if __name__ == '__main__':
 
     lad_bin = '/home/peilin/Dataset/LAD/annotations/npys/'
-    lad_bin = 'users/pyu12/data/bats/projects/attributes/LAD/'
+    lad_bin = '/users/pyu12/data/bats/projects/attributes/LAD/'
     valid_range = ['E', 'V', 'F', 'A', 'H']
     split_range = range(5)
 
