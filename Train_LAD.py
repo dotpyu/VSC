@@ -252,7 +252,7 @@ def main_proc(typ, split, lad_bin, save_loc='./'):
     att = att[:, index[typ]]
     input_dim = len(index[typ])  # num_attributes
 
-    word_vectors = att
+    word_vectors = torch.FloatTensor(att)
     word_vectors = F.normalize(word_vectors)  ## Normalize
 
     train_center = 'LAD_ResNet50_VC_{:s}_{:d}.json'.format(typ, split)
