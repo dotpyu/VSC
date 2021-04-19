@@ -70,14 +70,17 @@ def eval(typ, split, lad_bin):
         if ans==label:
             correct+=1
     #assert test_class_num==len(target_class), "Maybe there is someting wrong?"
-    print("For {:s} and Split {:d}, The final MCA result is {:.5f}".format(typ, split, correct/len(unseen_all)))
+    acc =  correct/len(unseen_all)
+    print("For {:s} and Split {:d}, The final MCA result is {:.5f}".format(typ, split,acc))
+    return acc
 
 
 if __name__=="__main__":
     valid_range = ['E', 'V', 'F', 'A', 'H']
     split_range = range(5)
     lad_bin = '/users/pyu12/data/bats/projects/attributes/LAD/'
+    results = {}
     for split in split_range:
         for typ in valid_range:
-            eval(typ, split, lad_bin)
-
+            results[typ+str(split)] = eval(typ, split, lad_bin)
+    np.save('results', results)
