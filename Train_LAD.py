@@ -248,7 +248,7 @@ def main_proc(typ, split, lad_bin, save_loc='./'):
     index = {'A':np.array(range(123)), 'F': np.array(range(123, 181)), 'V': np.array(range(181,261)), 'E':np.array(range(261, 337)), 'H':np.array(range(337, 359))}
     train_sig = sig[np.array(seen_classes)-1,:]
     test_sig = sig[np.array(unseen_classes)-1,:]
-    att = np.hstack((train_sig, test_sig))
+    att = np.vstack((train_sig, test_sig))
     att = att[:, index[typ]]
     input_dim = len(index[typ])  # num_attributes
 
