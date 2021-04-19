@@ -70,7 +70,7 @@ def eval(typ, split, lad_bin):
         if ans==label:
             correct+=1
     #assert test_class_num==len(target_class), "Maybe there is someting wrong?"
-    print("For {:s} and Split {:d}, The final MCA result is {:%.5f}",format(typ, split, correct/len(unseen_all)))
+    print("For {:s} and Split {:d}, The final MCA result is {:%.5f}".format(typ, split, correct/len(unseen_all)))
 
 
 if __name__=="__main__":
