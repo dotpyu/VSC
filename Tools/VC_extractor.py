@@ -90,5 +90,7 @@ if __name__=='__main__':
     obj={}
     obj["train"]=target_VC
     obj["test"]=test_VC
-    cur_url = "%s_ResNet101_%d_VC.json"%(opts.dataset_name,opts.mode)
+    cur_url = "%s_ResNet50_%d_VC.json"%(opts.dataset_name,opts.mode)
+
+    
     json.dump(obj, open(cur_url, "w"))
