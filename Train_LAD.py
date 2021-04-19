@@ -336,4 +336,3 @@ if __name__=='__main__':
     for split in split_range:
         for typ in valid_range:
             main_proc(typ, split, lad_bin)
-            break
