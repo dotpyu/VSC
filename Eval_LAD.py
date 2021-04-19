@@ -82,7 +82,10 @@ if __name__=="__main__":
     results = {}
     for split in split_range:
         for typ in valid_range:
-            results[typ+str(split)] = eval(typ, split, lad_bin)
+            try:
+                results[typ+str(split)] = eval(typ, split, lad_bin)
+            except:
+                results[typ + str(split)] = -1.0
     np.save('results', results)
 
     printout_order = ['A', 'F', 'V', 'E', 'H']
